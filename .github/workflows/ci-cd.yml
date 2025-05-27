@@ -20,7 +20,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: "1.21" # замените версию, если нужно
+          go-version: "1.21"
 
       - name: Install dependencies
         run: go mod download
@@ -51,4 +51,4 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/your-repo:${{ github.ref_name }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/go-docker:${{ github.ref_name }}
