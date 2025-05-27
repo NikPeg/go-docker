@@ -56,3 +56,41 @@ go build -o parcel-tracker .
 - status - статус посылки (registered, sent, delivered)
 - address - адрес доставки
 - created_at - дата и время регистрации посылки
+# CI/CD
+### Автоматизация сборки, тестирования и публикации Docker-образа
+В проекте настроен GitHub Actions CI/CD.
+Пайплайн выполняет:
+
+- автоматическую проверку кода (go vet) и запуск тестов (go test) на все push и pull request;
+- автоматическую сборку и публикацию Docker-образа на Docker Hub при push-е тега вида v* (например, v1.0.0).
+- Как опубликовать новый Docker-образ
+
+Создайте git-тег с нужной версией:
+
+```sh
+git tag v1.0.0
+git push --tags
+```
+Вместо v1.0.0 подставьте нужную версию.
+
+После этого GitHub Actions сам:
+
+- прогонит тесты,
+- соберет Docker-образ,
+- опубликует его на DockerHub в формате:
+```php
+<ваш DockerHub username>/<имя репозитория>:<ваш_тег>
+```
+Например:
+ivanpetrov/parcel-tracker:v1.0.0
+### Секреты для публикации
+Для успешного пуша в DockerHub в настройках репозитория GitHub (Settings → Secrets and variables → Actions → secrets) должны быть:
+
+- DOCKERHUB_USERNAME — ваш логин на DockerHub
+- DOCKERHUB_TOKEN — DockerHub access token с правами “Read & Write”.
+
+### Пример получения последней версии образа:
+
+```sh
+docker pull <ваш DockerHub username>/<имя репозитория>:v1.0.0
+```
