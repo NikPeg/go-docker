@@ -4,12 +4,12 @@ on:
   push:
     branches:
       - main
+    tags:
+      - 'v*'
   pull_request:
-  # Для публикации по тегу:
-  release:
-    types: [published]
 
 jobs:
+
   test:
     name: Test and Lint
     runs-on: ubuntu-latest
@@ -20,7 +20,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: "1.21" # или ваша версия Go
+          go-version: "1.21" # замените версию, если нужно
 
       - name: Install dependencies
         run: go mod download
@@ -33,9 +33,9 @@ jobs:
 
   docker:
     name: Build & Push Docker
-    needs: test
     runs-on: ubuntu-latest
-    if: github.event_name == 'release' && github.event.action == 'published'
+    needs: test
+    if: startsWith(github.ref, 'refs/tags/v')
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -51,5 +51,4 @@ jobs:
         with:
           context: .
           push: true
-          # Получить имя тега из GitHub Release
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/your-repository:${{ github.event.release.tag_name }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/your-repo:${{ github.ref_name }}
